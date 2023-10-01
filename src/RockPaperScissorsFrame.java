@@ -1,35 +1,35 @@
 import javax.swing.*;
-import javax.swing.border.Border;
 import javax.swing.border.EtchedBorder;
 import javax.swing.border.TitledBorder;
 import java.awt.*;
 import java.awt.event.ActionEvent;
-import javax.swing.BorderFactory;
-public class RockPaperScissorsFrame extends JFrame
+import java.awt.event.ActionListener;
+
+public class RockPaperScissorsFrame extends JFrame implements ActionListener
 {
-    JPanel mainPanel;
-    JPanel iconPnl; //top
-    JPanel displayPnl; //center
-    JPanel controlPnl; //Bottom
-    JPanel comboPnl;
-    JTextArea displayTA;
-    JScrollPane scroller;
-    JLabel titleLbl;
-    ImageIcon icon;
-    JButton rockBtn;
-    JButton paperBtn;
-    JButton scissorsBtn;
-    JButton quitBtn;
-    JPanel statsPanel;
-    JLabel pWin; //Player wins
-    JLabel cWin; //computer wins
-    JLabel tie; //Tie game
-    int winComputerCnt = 0; //Track number of wins Computer has against player in the status panel
-    int winPlayerCnt = 0; //Track number of wins Player has against player in the status panel
-    JLabel statsLabel;
-    JTextArea statsTA;
+    private JPanel mainPanel;
+    private JPanel iconPnl;
+    private JPanel displayPnl;
+    private JPanel controlPnl;
+    private JTextArea displayTA;
+    private JScrollPane scroller;
+    private JLabel titleLbl;
+    private ImageIcon icon;
+    private JButton rockBtn;
+    private JButton paperBtn;
+    private JButton scissorsBtn;
+    private JButton quitBtn;
+    private JPanel statsPanel;
+    private JLabel pWin;
+    private JLabel cWin;
+    private JLabel tie;
+    private int computerWinCnt = 0;
+    private int playerWinCnt = 0;
+    private JTextArea statsTA;
+
     public RockPaperScissorsFrame()
-    {   //Center Game on screen
+    {
+        // Center Game on screen
         Toolkit kit = Toolkit.getDefaultToolkit();
         Dimension screenSize = kit.getScreenSize();
         int screenHeight = screenSize.height;
@@ -37,96 +37,87 @@ public class RockPaperScissorsFrame extends JFrame
         setSize(screenWidth / 2, screenHeight / 2);
         setLocation(screenWidth / 4, screenHeight / 4);
 
-        JPanel mainPnl = new JPanel();
-        mainPnl.setLayout(new BorderLayout());
-        createIconPanel();
-        mainPnl.add(iconPnl, BorderLayout.NORTH); //this holds the RPS Game Image
+        mainPanel = new JPanel();
+        mainPanel.setLayout(new BorderLayout());
 
-        createDisplayPanel();
-        mainPnl.add(displayPnl, BorderLayout.WEST); //This displays the game results as it is played
-        TitledBorder displayBorder = BorderFactory.createTitledBorder(BorderFactory.createEtchedBorder(), "Game Play Results");
-        displayBorder.setTitleJustification(TitledBorder.CENTER);
-        displayPnl.setBorder(displayBorder);
-
-        //Stats panel in East
-        createStatsPanel();
-        mainPnl.add(statsPanel, BorderLayout.EAST); //This shows the stats of the game. How many wins per player TitledBorder border = BorderFactory.createTitledBorder(BorderFactory.createEtchedBorder(), "Game Stats");
-        TitledBorder border = BorderFactory.createTitledBorder(BorderFactory.createEtchedBorder(), "Game Stats");
-        border.setTitleJustification(TitledBorder.CENTER);
-        statsPanel.setBorder(border);
-        
-
-        createControlPanel();
-        mainPnl.add(controlPnl, BorderLayout.SOUTH); //This contains all the buttons used to play the game
-
-        add(mainPnl);
-        setSize(800,800);
-        setTitle("Rock-Paper-Scissors");
-        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        setVisible(true);
-    }
-    private void createStatsPanel() //This shows the stats of the game on right side of the screen. How many wins per player
-    {
-        statsPanel = new JPanel();
-        statsTA = new JTextArea(20, 85);
-        statsTA.setEditable(false);
-        scroller = new JScrollPane(statsTA);
-        statsPanel.add(scroller);
-        setVisible(true);
-    }
-    private void createComboPanel()
-    {
-        comboPnl = new JPanel();
-        comboPnl.setBorder(new TitledBorder(new EtchedBorder(), "Home"));
-
-    }
-    private void createIconPanel()
-    {
+        // Create icon panel
         iconPnl = new JPanel();
         icon = new ImageIcon("src/RPS.jpg");
-        iconPnl.setSize(20,20);
+        iconPnl.setSize(20, 20);
         titleLbl = new JLabel("Rock Paper Scissors", icon, JLabel.CENTER);
         titleLbl.setVerticalTextPosition(JLabel.BOTTOM);
         titleLbl.setHorizontalTextPosition(JLabel.CENTER);
         iconPnl.add(titleLbl);
-    }
-    private void createDisplayPanel() //WEST/ Left panel with the game results
-    {
-        displayPnl = new JPanel();
-//        displayPnl.setBorder(new TitledBorder("Game Stats"));//
-//        displayPnl.setLayout(new GridLayout(1,3));
-        displayTA = new JTextArea(20,85);
 
+        // Add icon panel to main panel
+        mainPanel.add(iconPnl, BorderLayout.NORTH);
+
+        // Create display panel
+        displayPnl = new JPanel();
+        displayTA = new JTextArea(20, 86);
         displayTA.setEditable(false);
         scroller = new JScrollPane(displayTA);
         displayPnl.add(scroller);
-        //displayPnl.add(statsLabel);
+        TitledBorder displayBorder = BorderFactory.createTitledBorder(BorderFactory.createEtchedBorder(), "Game Play Results");
+        displayBorder.setTitleJustification(TitledBorder.CENTER);
+        displayPnl.setBorder(displayBorder);
+
+        // Add display panel to main panel
+        mainPanel.add(displayPnl, BorderLayout.WEST);
+
+        // Create stats panel
+        createStatsPanel();
+        mainPanel.add(statsPanel, BorderLayout.EAST);
+        TitledBorder border = BorderFactory.createTitledBorder(BorderFactory.createEtchedBorder(), "Game Stats");
+        border.setTitleJustification(TitledBorder.CENTER);
+        statsPanel.setBorder(border);
+
+        // Create control panel
+        createControlPanel();
+        mainPanel.add(controlPnl, BorderLayout.SOUTH);
+
+        add(mainPanel);
+        setSize(800, 800);
+        setTitle("Rock-Paper-Scissors");
+        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        setVisible(true);
     }
-    private void createControlPanel() //SOUTH panel with buttons
+    private void createStatsPanel()
+    {
+        statsPanel = new JPanel();
+        statsPanel.setBorder(new TitledBorder(new EtchedBorder(), "Game Stats"));
+        statsTA = new JTextArea(20, 80);
+        statsTA.setEditable(false);
+        scroller = new JScrollPane(statsTA);
+        statsPanel.add(scroller);
+
+        pWin = new JLabel("Player Wins:");
+        cWin = new JLabel("Computer Wins:");
+        tie = new JLabel("Tie Games:");
+
+        statsPanel.add(pWin);
+        statsPanel.add(cWin);
+        statsPanel.add(tie);
+        statsPanel.setVisible(true);
+    }
+    private void createControlPanel()
     {
         controlPnl = new JPanel();
-        controlPnl.setBorder(new TitledBorder(new EtchedBorder(),"Game Buttons")); //Button border
+        controlPnl.setBorder(new TitledBorder(new EtchedBorder(), "Game Buttons"));
         controlPnl.setLayout(new GridLayout(1, 4));
 
         icon = new ImageIcon("src/Rock.jpg");
         rockBtn = new JButton(icon);
-        rockBtn.addActionListener((ActionEvent ae) -> {
-            displayTA.append("You chose ROCK!\n");
-        });
+        rockBtn.addActionListener(this);
 
         icon = new ImageIcon("src/Paper.jpg");
         paperBtn = new JButton(icon);
-        paperBtn.addActionListener((ActionEvent ae) -> {
-            displayTA.append("You chose PAPER!\n");
-        });
+        paperBtn.addActionListener(this);
 
         icon = new ImageIcon("src/Scissors.jpg");
         scissorsBtn = new JButton(icon);
-        scissorsBtn.addActionListener((ActionEvent ae) -> {
-            displayTA.append("You chose SCISSORS!\n");
-        });
+        scissorsBtn.addActionListener(this);
 
-        icon = new ImageIcon("src/QuitGame.png");
         quitBtn = new JButton("Quit");
         quitBtn.addActionListener((ActionEvent ae) -> System.exit(0));
         quitBtn.setFont(new Font("Calibri", Font.PLAIN, 35));
@@ -135,9 +126,64 @@ public class RockPaperScissorsFrame extends JFrame
         controlPnl.add(paperBtn);
         controlPnl.add(scissorsBtn);
         controlPnl.add(quitBtn);
+    }
+    public void actionPerformed(ActionEvent ae)
+    {
+        if (ae.getSource() == rockBtn)
+        {
+            playGame("rock");
+        }
+        else if (ae.getSource() == paperBtn)
+        {
+            playGame("paper");
+        }
+        else if (ae.getSource() == scissorsBtn)
+        {
+            playGame("scissors");
+        }
+    }
+    private void playGame(String playerChoice)
+    {
+        String computerChoice = generateComputerChoice();
+        String result = determineWinner(playerChoice, computerChoice);
 
-//        rpsGroup.add(rockBtn);
-//        rpsGroup.add(paperBtn);
-//        rpsGroup.add(scissorsBtn);
+        String gameResult = playerChoice + " vs " + computerChoice + " (" + result + ")";
+        statsTA.append(gameResult + "\n");
+
+        if (result.equals("You win!"))
+        {
+            playerWinCnt++;
+        }
+        else if (result.equals("Computer wins!"))
+        {
+            computerWinCnt++;
+        }
+
+        pWin.setText("Player Wins: " + playerWinCnt);
+        cWin.setText("Computer Wins: " + computerWinCnt);
+        tie.setText("Tie Games: " + (playerWinCnt + computerWinCnt - 1));
+    }
+    private String determineWinner(String playerChoice, String computerChoice)
+    {
+        if (playerChoice.equals(computerChoice))
+        {
+            return "It's a tie!";
+        }
+        else if ((playerChoice.equals("rock") && computerChoice.equals("scissors")) ||
+                (playerChoice.equals("scissors") && computerChoice.equals("paper")) ||
+                (playerChoice.equals("paper") && computerChoice.equals("rock")))
+        {
+            return "You win!";
+        }
+        else
+        {
+            return "Computer wins!";
+        }
+    }
+    private String generateComputerChoice()
+    {
+        String[] choices = {"rock", "paper", "scissors"};
+        int randomIndex = (int) (Math.random() * choices.length);
+        return choices[randomIndex];
     }
 }
