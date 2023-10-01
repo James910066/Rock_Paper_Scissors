@@ -1,8 +1,10 @@
 import javax.swing.*;
+import javax.swing.border.Border;
 import javax.swing.border.EtchedBorder;
 import javax.swing.border.TitledBorder;
 import java.awt.*;
 import java.awt.event.ActionEvent;
+import javax.swing.BorderFactory;
 public class RockPaperScissorsFrame extends JFrame
 {
     JPanel mainPanel;
@@ -18,9 +20,14 @@ public class RockPaperScissorsFrame extends JFrame
     JButton paperBtn;
     JButton scissorsBtn;
     JButton quitBtn;
-
+    JPanel statsPanel;
+    JLabel pWin; //Player wins
+    JLabel cWin; //computer wins
+    JLabel tie; //Tie game
     int winComputerCnt = 0; //Track number of wins Computer has against player in the status panel
     int winPlayerCnt = 0; //Track number of wins Player has against player in the status panel
+    JLabel statsLabel;
+    JTextArea statsTA;
     public RockPaperScissorsFrame()
     {   //Center Game on screen
         Toolkit kit = Toolkit.getDefaultToolkit();
@@ -33,38 +40,39 @@ public class RockPaperScissorsFrame extends JFrame
         JPanel mainPnl = new JPanel();
         mainPnl.setLayout(new BorderLayout());
         createIconPanel();
-        mainPnl.add(iconPnl, BorderLayout.NORTH);
+        mainPnl.add(iconPnl, BorderLayout.NORTH); //this holds the RPS Game Image
 
         createDisplayPanel();
-        mainPnl.add(displayPnl, BorderLayout.CENTER);
+        mainPnl.add(displayPnl, BorderLayout.WEST); //This displays the game results as it is played
+        TitledBorder displayBorder = BorderFactory.createTitledBorder(BorderFactory.createEtchedBorder(), "Game Play Results");
+        displayBorder.setTitleJustification(TitledBorder.CENTER);
+        displayPnl.setBorder(displayBorder);
+
+        //Stats panel in East
+        createStatsPanel();
+        mainPnl.add(statsPanel, BorderLayout.EAST); //This shows the stats of the game. How many wins per player TitledBorder border = BorderFactory.createTitledBorder(BorderFactory.createEtchedBorder(), "Game Stats");
+        TitledBorder border = BorderFactory.createTitledBorder(BorderFactory.createEtchedBorder(), "Game Stats");
+        border.setTitleJustification(TitledBorder.CENTER);
+        statsPanel.setBorder(border);
+        
 
         createControlPanel();
-        mainPnl.add(controlPnl, BorderLayout.SOUTH);
+        mainPnl.add(controlPnl, BorderLayout.SOUTH); //This contains all the buttons used to play the game
 
-       add(mainPnl);
+        add(mainPnl);
         setSize(800,800);
-       setTitle("Rock-Paper-Scissors");
-       setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-       setVisible(true);
-//        JLabel RPSLabel = new JLabel("");
-//        JTextField rpsTf = new JTextField(40);
-//        rpsTf.setText("Choose weapon: Rock, Paper or Scissors");
-//        rpsTf.setEditable(false);
-//
-//        JButton rockBtn = new JButton("Rock");
-//        add(rockBtn);
-//
-//        JButton paperBtn = new JButton("Paper");
-//        add(paperBtn);
-//
-//        JButton scissorsBtn = new JButton("Scissors");
-//        add(scissorsBtn);
-//
-//        JButton quitBtn = new JButton("Quit");
-//
-//        mainPnl.add(RPSLabel);
-//        mainPnl.add(rpsTf);
-//        mainPnl.add(rockBtn);
+        setTitle("Rock-Paper-Scissors");
+        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        setVisible(true);
+    }
+    private void createStatsPanel() //This shows the stats of the game on right side of the screen. How many wins per player
+    {
+        statsPanel = new JPanel();
+        statsTA = new JTextArea(20, 85);
+        statsTA.setEditable(false);
+        scroller = new JScrollPane(statsTA);
+        statsPanel.add(scroller);
+        setVisible(true);
     }
     private void createComboPanel()
     {
@@ -82,42 +90,21 @@ public class RockPaperScissorsFrame extends JFrame
         titleLbl.setHorizontalTextPosition(JLabel.CENTER);
         iconPnl.add(titleLbl);
     }
-    private void createDisplayPanel()
+    private void createDisplayPanel() //WEST/ Left panel with the game results
     {
         displayPnl = new JPanel();
-        displayTA = new JTextArea(20,45);
+//        displayPnl.setBorder(new TitledBorder("Game Stats"));//
+//        displayPnl.setLayout(new GridLayout(1,3));
+        displayTA = new JTextArea(20,85);
+
         displayTA.setEditable(false);
         scroller = new JScrollPane(displayTA);
         displayPnl.add(scroller);
+        //displayPnl.add(statsLabel);
     }
-//    private void createRadioPanel()
-//    {
-//        radioPnl = new JPanel();
-//        radioPnl.setLayout(new GridLayout(1, 4));
-//        radioPnl.setBorder(new TitledBorder(new EtchedBorder(),"Radio Buttons"));
-//
-//
-//        rockBtn  = new JRadioButton("Rock");
-//        paperBtn = new JRadioButton("Paper");
-//        scissorsBtn  = new JRadioButton("Scissors");
-//
-//
-//        radioPnl.add(rockBtn);
-//        radioPnl.add(paperBtn);
-//        radioPnl.add(scissorsBtn);
-//
-//        rockBtn.setSelected(true);
-//
-//        ButtonGroup rpsGroup = new ButtonGroup();
-//        rpsGroup.add(rockBtn);
-//        rpsGroup.add(paperBtn);
-//        rpsGroup.add(scissorsBtn);
-//
-//    }
-    private void createControlPanel()
+    private void createControlPanel() //SOUTH panel with buttons
     {
         controlPnl = new JPanel();
-        ButtonGroup rpsGroup = new ButtonGroup();
         controlPnl.setBorder(new TitledBorder(new EtchedBorder(),"Game Buttons")); //Button border
         controlPnl.setLayout(new GridLayout(1, 4));
 
@@ -126,6 +113,7 @@ public class RockPaperScissorsFrame extends JFrame
         rockBtn.addActionListener((ActionEvent ae) -> {
             displayTA.append("You chose ROCK!\n");
         });
+
         icon = new ImageIcon("src/Paper.jpg");
         paperBtn = new JButton(icon);
         paperBtn.addActionListener((ActionEvent ae) -> {
@@ -148,16 +136,8 @@ public class RockPaperScissorsFrame extends JFrame
         controlPnl.add(scissorsBtn);
         controlPnl.add(quitBtn);
 
-
-        rpsGroup.add(rockBtn);
-        rpsGroup.add(paperBtn);
-        rpsGroup.add(scissorsBtn);
-
-
+//        rpsGroup.add(rockBtn);
+//        rpsGroup.add(paperBtn);
+//        rpsGroup.add(scissorsBtn);
     }
-
-
-
-
-
 }
